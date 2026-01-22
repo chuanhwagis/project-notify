@@ -1,0 +1,1811 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#157878">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>【RW標案通知服務】</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.4;
+            margin: 0;
+            padding: 15px;
+            background-color: #f4f4f4;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.6em;
+            font-weight: 500;
+        }
+
+        .stats {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            border-bottom: 2px solid #e9ecef;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            flex: 1;
+            min-width: 120px;
+            margin: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+            .stat-item:hover {
+                background: rgba(0, 123, 255, 0.1);
+                transform: translateY(-2px);
+            }
+
+            .stat-item.clickable:hover {
+                background: rgba(111, 66, 193, 0.1);
+            }
+
+        .stat-number {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 1px;
+        }
+
+        .content {
+            padding: 20px;
+            position: relative;
+        }
+
+        .section-title {
+            background: #007bff;
+            color: white;
+            padding: 10px 15px;
+            margin: 20px 0 12px 0;
+            border-radius: 6px;
+            font-size: 1.1em;
+            font-weight: 500;
+            scroll-margin-top: 20px;
+        }
+
+            .section-title.appeal {
+                background: #6f42c1;
+            }
+
+        /* 專案標題樣式 */
+        .project-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #007BFF;
+            margin: 12px 0 6px 0;
+            line-height: 1.4;
+        }
+
+            .project-title a {
+                color: #007BFF;
+                text-decoration: none;
+                font-weight: bold;
+            }
+
+                .project-title a:hover {
+                    text-decoration: underline;
+                    color: #0056b3;
+                }
+
+            /* 公開徵求的專案標題改為紫色 */
+            .project-title.appeal {
+                color: #6f42c1;
+            }
+
+                .project-title.appeal a {
+                    color: #6f42c1;
+                }
+
+                    .project-title.appeal a:hover {
+                        color: #5a2d91;
+                    }
+
+        /* 專案詳細資訊 */
+        .project-details {
+            background: #f8f9fa;
+            padding: 10px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+        }
+
+            .project-details.appeal {
+                border-left-color: #6f42c1;
+            }
+
+        .detail-item {
+            margin: 3px 0;
+            font-size: 1.05em;
+        }
+
+            .detail-item strong {
+                color: #495057;
+                font-weight: 600;
+                display: inline-block;
+                min-width: 100px;
+            }
+
+        /* 撤銷標示 */
+        .revoked-badge {
+            background: #dc3545;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-left: 8px;
+            display: inline-block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 25px;
+            color: #666;
+            font-style: italic;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin: 12px 0;
+        }
+
+        .keywords-section {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-top: 25px;
+            border-radius: 6px;
+        }
+
+            .keywords-section h4 {
+                color: #495057;
+                margin-bottom: 8px;
+                font-size: 1.05em;
+            }
+
+        blockquote {
+            background: white;
+            border-left: 6px solid #007bff;
+            margin: 8px 0;
+            padding: 12px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            font-style: italic;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background: #ddd;
+            margin: 12px 0;
+        }
+
+        /* 回到頂部按鈕 */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #007bff;
+            color: white;
+            padding: 12px 15px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 0.9em;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+            .back-to-top.show {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .back-to-top:hover {
+                background: #0056b3;
+                transform: translateY(-2px);
+            }
+
+        /* 手機優化 */
+        @media (max-width: 768px) {
+            body {
+                padding: 8px;
+                font-size: 17px;
+            }
+
+            .header {
+                padding: 10px 15px;
+            }
+
+            h1 {
+                font-size: 1.4em;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .stats {
+                padding: 8px 12px;
+                flex-wrap: nowrap; /* 手機上不換行 */
+                overflow-x: auto; /* 允許水平滾動 */
+            }
+
+            .stat-item {
+                min-width: 90px; /* 縮小最小寬度 */
+                margin: 1px 2px; /* 減少間距 */
+                flex: none; /* 不伸縮 */
+            }
+
+            .stat-number {
+                font-size: 1.1em;
+            }
+
+            .stat-label {
+                font-size: 0.7em; /* 進一步縮小 */
+            }
+
+            .project-title {
+                font-size: 1.15em;
+                margin: 10px 0 5px 0;
+            }
+
+            .project-details {
+                padding: 8px;
+                margin-bottom: 10px;
+            }
+
+            .detail-item {
+                font-size: 1em;
+                margin: 3px 0;
+            }
+
+                .detail-item strong {
+                    min-width: 85px;
+                    font-size: 1em;
+                }
+
+            .section-title {
+                font-size: 1.05em;
+                padding: 8px 12px;
+                margin: 15px 0 10px 0;
+            }
+
+            .keywords-section {
+                padding: 12px;
+                margin-top: 20px;
+            }
+
+            .back-to-top {
+                bottom: 15px;
+                right: 15px;
+                padding: 10px 12px;
+                font-size: 0.8em;
+            }
+        }
+
+        /* 更小螢幕優化 */
+        @media (max-width: 480px) {
+            body {
+                padding: 6px;
+                font-size: 16px;
+            }
+
+            .header {
+                padding: 8px 12px;
+            }
+
+            h1 {
+                font-size: 1.3em;
+            }
+
+            .stats {
+                padding: 6px 8px;
+            }
+
+            .stat-item {
+                min-width: 80px;
+                margin: 1px;
+            }
+
+            .stat-number {
+                font-size: 1em;
+            }
+
+            .stat-label {
+                font-size: 0.65em;
+            }
+
+            .project-title {
+                font-size: 1.1em;
+                margin: 8px 0 4px 0;
+            }
+
+            .detail-item {
+                font-size: 0.95em;
+                margin: 2px 0;
+            }
+
+                .detail-item strong {
+                    min-width: 80px;
+                    font-size: 0.95em;
+                }
+
+            .section-title {
+                font-size: 1em;
+                padding: 6px 10px;
+                margin: 12px 0 8px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header" id="top">
+            <h1>【RW標案通知服務】</h1>
+            <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 0.85em;">💡 點選標案名稱開啟詳細頁面</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number">2026/01/23</div>
+                <div class="stat-label">📅 公告日期</div>
+            </div>
+            <div class="stat-item" onclick="scrollToSection('tender-section')">
+                <div class="stat-number">76</div>
+                <div class="stat-label">🏗️ 招標案件</div>
+            </div>
+            <div class="stat-item clickable" onclick="scrollToSection('appeal-section')">
+                <div class="stat-number">58</div>
+                <div class="stat-label">📋 公開徵求</div>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- 招標案件區塊 -->
+            <div class="section-title" id="tender-section">🏗️ 招標案件 (76 件)</div>
+            
+                <div class="project-title">
+                    1. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzQxOTE=&openExternalBrowser=1" target="_blank">「智慧藥品管理整合系統建置暨設備提供與服務租賃案」採購</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>TNHP1158003</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>衛生福利部臺南醫院</div>
+                    <div class="detail-item"><strong>預算金額：</strong>3,150,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/29</div>
+                </div>
+                <div class="project-title">
+                    2. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzQxODM=&openExternalBrowser=1" target="_blank">115年度第四河川分署水文觀測設備更新暨維護保養</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>Plan1150902</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>經濟部水利署第四河川分署</div>
+                    <div class="detail-item"><strong>預算金額：</strong>2,150,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/03</div>
+                </div>
+                <div class="project-title">
+                    3. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzQxNTc=&openExternalBrowser=1" target="_blank">115-117年度臺南市政府財政管理資訊系統委外維運案</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>11513</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>臺南市政府財政稅務局</div>
+                    <div class="detail-item"><strong>預算金額：</strong>5,550,500</div>
+                    <div class="detail-item"><strong>招標方式：</strong>經公開評選或公開徵求之限制性招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/03</div>
+                </div>
+                <div class="project-title">
+                    4. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzQxNDc=&openExternalBrowser=1" target="_blank">智慧壓力分布與體位分析系統</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>Z-Z-2-26-0006</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>臺北市立萬芳醫院-委託臺北醫學大學辦理</div>
+                    <div class="detail-item"><strong>預算金額：</strong>2,329,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/27</div>
+                </div>
+                <div class="project-title">
+                    5. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzQxMTc=&openExternalBrowser=1" target="_blank">萬大電廠昆蟲多樣性暨卓蘭、萬大及核三廠紫斑蝶調查及研析</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>0611500003</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>台灣電力股份有限公司</div>
+                    <div class="detail-item"><strong>預算金額：</strong>7,791,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>經公開評選或公開徵求之限制性招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/24</div>
+                </div>
+                <div class="project-title">
+                    6. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzQxMTE=&openExternalBrowser=1" target="_blank">115年度連江縣莒光鄉雨、污水下水道管線維護修繕暨緊急清淤工程(開口契約)</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>11504</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>連江縣莒光鄉公所</div>
+                    <div class="detail-item"><strong>預算金額：</strong>900,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>工程類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/27</div>
+                </div>
+                <div class="project-title">
+                    7. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzQwOTI=&openExternalBrowser=1" target="_blank">115年度「臺北市細懸浮微粒手動採樣監測暨分析計畫」</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115S017</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>臺北市政府環境保護局</div>
+                    <div class="detail-item"><strong>預算金額：</strong>1,537,696</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/29</div>
+                </div>
+                <div class="project-title">
+                    8. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzQwODA=&openExternalBrowser=1" target="_blank">115年度富里工作站農田水利設施維護開口契約</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>HL115_M008</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>農業部農田水利署</div>
+                    <div class="detail-item"><strong>預算金額：</strong>4,983,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/03</div>
+                </div>
+                <div class="project-title">
+                    9. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzQwNTY=&openExternalBrowser=1" target="_blank">115年度吉安工作站農田水利設施維護開口契約</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>HL115_M002</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>農業部農田水利署</div>
+                    <div class="detail-item"><strong>預算金額：</strong>4,983,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/03</div>
+                </div>
+                <div class="project-title">
+                    10. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzQwMzg=&openExternalBrowser=1" target="_blank">115年大專校院學生基本資料庫暨畢業生流向追蹤平臺資訊系統計畫維護電腦設備租賃案</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>YTG115001</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國立雲林科技大學</div>
+                    <div class="detail-item"><strong>預算金額：</strong>333,720</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開取得報價單或企劃書</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/28</div>
+                </div>
+                <div class="project-title">
+                    11. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzQwMzQ=&openExternalBrowser=1" target="_blank">115年度東山區雨水下水道及區排清淤維護工程(開口契約)</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115007</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>臺南市東山區公所</div>
+                    <div class="detail-item"><strong>預算金額：</strong>3,281,933</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>工程類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/03</div>
+                </div>
+                <div class="project-title">
+                    12. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzQwMTA=&openExternalBrowser=1" target="_blank">蘆洲P/S改建工程(臨時69kVGIS)配電盤</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>6541500002</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>台灣電力股份有限公司輸變電工程處北區施工處</div>
+                    <div class="detail-item"><strong>預算金額：</strong>1,000,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/29</div>
+                </div>
+                <div class="project-title">
+                    13. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM5ODQ=&openExternalBrowser=1" target="_blank">115年度玉里工作站農田水利設施維護開口契約</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>HL115_M007</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>農業部農田水利署</div>
+                    <div class="detail-item"><strong>預算金額：</strong>4,983,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/03</div>
+                </div>
+                <div class="project-title">
+                    14. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM5NjU=&openExternalBrowser=1" target="_blank">115年度瑞穗工作站農田水利設施維護開口契約</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>HL115_M006</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>農業部農田水利署</div>
+                    <div class="detail-item"><strong>預算金額：</strong>2,990,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/03</div>
+                </div>
+                <div class="project-title">
+                    15. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM4Nzk=&openExternalBrowser=1" target="_blank">115年度中小排、雨水下水道及各級排水路（不含道路側溝）等改善維護工程(開口契約)設計監造委託技術服務</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115B10</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>臺中市和平區公所</div>
+                    <div class="detail-item"><strong>預算金額：</strong>257,670</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開取得報價單或企劃書</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/29</div>
+                </div>
+                <div class="project-title">
+                    16. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM4NzI=&openExternalBrowser=1" target="_blank">臺東市祥和路B4~B5雨水下水道改善工程暨B5~B9興建工程</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>114190410395</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>臺東縣政府</div>
+                    <div class="detail-item"><strong>預算金額：</strong>20,558,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>工程類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/28</div>
+                </div>
+                <div class="project-title">
+                    17. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM4MDk=&openExternalBrowser=1" target="_blank">巒大129林班調查與監測作業</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115405A406</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>農業部林業及自然保育署南投分署</div>
+                    <div class="detail-item"><strong>預算金額：</strong>3,500,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>經公開評選或公開徵求之限制性招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/02</div>
+                </div>
+                <div class="project-title">
+                    18. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM3OTg=&openExternalBrowser=1" target="_blank">115年度新城鄉都市計畫雨水下水道清淤工程開口契約</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>rk115001</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>花蓮縣新城鄉公所</div>
+                    <div class="detail-item"><strong>預算金額：</strong>1,503,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>工程類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/06</div>
+                </div>
+                <div class="project-title">
+                    19. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM3Nzg=&openExternalBrowser=1" target="_blank">115年度濁水溪支流大斷面測量計畫</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>Plan1150701</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>經濟部水利署第四河川分署</div>
+                    <div class="detail-item"><strong>預算金額：</strong>6,500,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>經公開評選或公開徵求之限制性招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/03</div>
+                </div>
+                <div class="project-title">
+                    20. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM3NzU=&openExternalBrowser=1" target="_blank">社福整合資訊系統第一期建置暨社政及社工個案管理系統維護案</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>1150122-1</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>桃園市政府工務局</div>
+                    <div class="detail-item"><strong>預算金額：</strong>6,255,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>經公開評選或公開徵求之限制性招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/03</div>
+                </div>
+                <div class="project-title">
+                    21. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM3NTg=&openExternalBrowser=1" target="_blank">115年度鯉魚潭水庫營管系統設備擴充及更新改善</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115-LMC-13</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>經濟部水利署中區水資源分署</div>
+                    <div class="detail-item"><strong>預算金額：</strong>6,850,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/24</div>
+                </div>
+                <div class="project-title">
+                    22. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM3MDU=&openExternalBrowser=1" target="_blank">115年度坪林區雨水下水道及市區側溝維護與其他排水設施管理工程(開口契約)</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115012202</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>新北市坪林區公所</div>
+                    <div class="detail-item"><strong>預算金額：</strong>2,243,565</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>工程類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/03</div>
+                </div>
+                <div class="project-title">
+                    23. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM2OTU=&openExternalBrowser=1" target="_blank">林口發電廠粒狀污染物重量濃度監測設施設置一批</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>3201500012</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>台灣電力股份有限公司林口發電廠</div>
+                    <div class="detail-item"><strong>預算金額：</strong>36,185,100</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/03</div>
+                </div>
+                <div class="project-title">
+                    24. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM2ODA=&openExternalBrowser=1" target="_blank">115年高雄市各戶政事務所鋁質門牌財物聯合採購(開口契約)</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>1150115</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>高雄市政府民政局</div>
+                    <div class="detail-item"><strong>預算金額：</strong>1,440,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開取得報價單或企劃書</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/28</div>
+                </div>
+                <div class="project-title">
+                    25. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM2NjM=&openExternalBrowser=1" target="_blank">3D影像及2DIR螢光系統組等2項</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>NM15006P006</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國防部軍醫局</div>
+                    <div class="detail-item"><strong>預算金額：</strong>9,700,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/27</div>
+                </div>
+                <div class="project-title">
+                    26. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM2Mjc=&openExternalBrowser=1" target="_blank">2026雲西海洋音樂季規劃執行委託案</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>1142H10127</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>雲林縣政府</div>
+                    <div class="detail-item"><strong>預算金額：</strong>12,000,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>經公開評選或公開徵求之限制性招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/13</div>
+                </div>
+                <div class="project-title">
+                    27. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM2MjE=&openExternalBrowser=1" target="_blank">115年度「琉球人流管制資訊系統維護案」</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>C1150122-1</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>屏東縣政府</div>
+                    <div class="detail-item"><strong>預算金額：</strong>750,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開取得報價單或企劃書</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/02</div>
+                </div>
+                <div class="project-title">
+                    28. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM1NTQ=&openExternalBrowser=1" target="_blank">宜蘭縣政府消防局115年度購置水箱消防車2輛及水庫消防車1輛採購案</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>1150201S3</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>宜蘭縣政府消防局</div>
+                    <div class="detail-item"><strong>預算金額：</strong>25,000,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/02</div>
+                </div>
+                <div class="project-title">
+                    29. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzEwNzIxNTI=&openExternalBrowser=1" target="_blank">澎湖縣馬公地區污水下水道系統第二期P1揚水站及壓力管工程</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>CW-11140069</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>澎湖縣政府</div>
+                    <div class="detail-item"><strong>預算金額：</strong>79,100,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>工程類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/11</div>
+                </div>
+                <div class="project-title">
+                    30. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM1Mjg=&openExternalBrowser=1" target="_blank">115年度湖山水庫淤積測量</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115-HMC-14</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>經濟部水利署中區水資源分署</div>
+                    <div class="detail-item"><strong>預算金額：</strong>974,820</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開取得報價單或企劃書</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/03</div>
+                </div>
+                <div class="project-title">
+                    31. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM1MjE=&openExternalBrowser=1" target="_blank">「南關線三大廟王醮暨遊社」王醮及陣頭文物調查第三期─關廟山西宮</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115TMACH57S</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>臺南市文化資產管理處</div>
+                    <div class="detail-item"><strong>預算金額：</strong>950,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開取得報價單或企劃書</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/29</div>
+                </div>
+                <div class="project-title">
+                    32. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM1MDk=&openExternalBrowser=1" target="_blank">115年度身心障礙者職業訓練-AI數位科技運用與雷雕實務班</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>1152G10005</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>雲林縣政府</div>
+                    <div class="detail-item"><strong>預算金額：</strong>974,944</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開取得報價單或企劃書</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/30</div>
+                </div>
+                <div class="project-title">
+                    33. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM1MDc=&openExternalBrowser=1" target="_blank">115年第六河川分署水利監測資訊管理維護計畫</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>C11501</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>經濟部水利署第六河川分署</div>
+                    <div class="detail-item"><strong>預算金額：</strong>7,850,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>經公開評選或公開徵求之限制性招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/04</div>
+                </div>
+                <div class="project-title">
+                    34. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM0OTM=&openExternalBrowser=1" target="_blank">粒狀污染物重量濃度連續式煙氣監測設施(PMCEMS)6組</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>3711400369</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>台灣電力股份有限公司台中發電廠</div>
+                    <div class="detail-item"><strong>預算金額：</strong>61,614,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/29</div>
+                </div>
+                <div class="project-title">
+                    35. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM0MTg=&openExternalBrowser=1" target="_blank">數位攝影機等7項備品採購</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>2B15T430003</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>桃園大眾捷運股份有限公司</div>
+                    <div class="detail-item"><strong>預算金額：</strong>1,887,935</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/29</div>
+                </div>
+                <div class="project-title">
+                    36. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzM0MjE=&openExternalBrowser=1" target="_blank">元素分析數位顯微鏡暨周邊設備採購案</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>TPFB115026-1150159305</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>新北市政府消防局</div>
+                    <div class="detail-item"><strong>預算金額：</strong>3,500,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/04</div>
+                </div>
+                <div class="project-title">
+                    37. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMzODA=&openExternalBrowser=1" target="_blank">「高雄港區基礎設施場站增設潔淨氣體自動滅火系統及智慧監控升級工程」設計及監造工作委託技術服務</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>A3W000042-1</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>臺灣港務股份有限公司高雄港務分公司</div>
+                    <div class="detail-item"><strong>預算金額：</strong>26,409,542</div>
+                    <div class="detail-item"><strong>招標方式：</strong>經公開評選或公開徵求之限制性招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/03/02</div>
+                </div>
+                <div class="project-title">
+                    38. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMzNzk=&openExternalBrowser=1" target="_blank">衛教資訊系統擴充暨維護案</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>HJ15713P161</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國防醫學大學</div>
+                    <div class="detail-item"><strong>預算金額：</strong>1,050,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開取得報價單或企劃書</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/05</div>
+                </div>
+                <div class="project-title">
+                    39. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMzNTk=&openExternalBrowser=1" target="_blank">115至116年度南竿鄉污水下水道系統維護檢修工程(開口契約)</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115A001</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>連江縣環境資源局</div>
+                    <div class="detail-item"><strong>預算金額：</strong>8,925,428</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>工程類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/02</div>
+                </div>
+                <div class="project-title">
+                    40. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMzMzc=&openExternalBrowser=1" target="_blank">115年度智慧國土跨機關協作應用採購案</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>NLSC-115-35</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>內政部國土測繪中心</div>
+                    <div class="detail-item"><strong>預算金額：</strong>9,000,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>經公開評選或公開徵求之限制性招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/06</div>
+                </div>
+                <div class="project-title">
+                    41. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMzMTk=&openExternalBrowser=1" target="_blank">115-116年醫療作業資訊系統維護暨功能擴充整合案</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115HC-IT3-24-002</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>臺北榮民總醫院新竹分院</div>
+                    <div class="detail-item"><strong>預算金額：</strong>7,524,560</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/28</div>
+                </div>
+                <div class="project-title">
+                    42. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMyOTA=&openExternalBrowser=1" target="_blank">115年24小時飲食資料數位化蒐集工具與中高齡者營養調查應用研究</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>E1150104</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>衛生福利部國民健康署</div>
+                    <div class="detail-item"><strong>預算金額：</strong>5,500,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>經公開評選或公開徵求之限制性招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/10</div>
+                </div>
+                <div class="project-title">
+                    43. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMyNTA=&openExternalBrowser=1" target="_blank">115年全臺地區(彰化及雲林除外)地層下陷監測</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>MOEAWRA1150275</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>經濟部水利署</div>
+                    <div class="detail-item"><strong>預算金額：</strong>9,320,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>經公開評選或公開徵求之限制性招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/03</div>
+                </div>
+                <div class="project-title">
+                    44. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMyMzI=&openExternalBrowser=1" target="_blank">案卷檔案數位化</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>HI15012P013</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國防部軍事情報局</div>
+                    <div class="detail-item"><strong>預算金額：</strong>4,401,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/04</div>
+                </div>
+                <div class="project-title">
+                    45. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMyMjE=&openExternalBrowser=1" target="_blank">115年度嘉義縣牡蠣養殖漁業管理及區劃漁業權海上測量作業</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115GM041</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>嘉義縣政府</div>
+                    <div class="detail-item"><strong>預算金額：</strong>1,040,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開取得報價單或企劃書</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/30</div>
+                </div>
+                <div class="project-title">
+                    46. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMyMTQ=&openExternalBrowser=1" target="_blank">麻魚寮溪排水及埤麻腳排水治理工程變更都市計畫委託技術服務</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115-B-002-03</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>經濟部水利署第五河川分署</div>
+                    <div class="detail-item"><strong>預算金額：</strong>3,520,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>經公開評選或公開徵求之限制性招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/05</div>
+                </div>
+                <div class="project-title">
+                    47. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMyMDM=&openExternalBrowser=1" target="_blank">專業數位相機與鏡頭教學設備採購案</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>114018</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>世新大學</div>
+                    <div class="detail-item"><strong>預算金額：</strong>2,273,880</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/03</div>
+                </div>
+                <div class="project-title">
+                    48. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMxOTM=&openExternalBrowser=1" target="_blank">關切物質檢測技術開發及環境調查－紫外線吸收劑UV-328</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115FA030</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國家環境研究院</div>
+                    <div class="detail-item"><strong>預算金額：</strong>5,000,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>經公開評選或公開徵求之限制性招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/02</div>
+                </div>
+                <div class="project-title">
+                    49. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMxOTY=&openExternalBrowser=1" target="_blank">淡水河及臺北港水下觀測站濁度計及流速計備品採購</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>IOT-115-H2D004</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>交通部運輸研究所</div>
+                    <div class="detail-item"><strong>預算金額：</strong>752,020</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開取得報價單或企劃書</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/02</div>
+                </div>
+                <div class="project-title">
+                    50. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMxMjg=&openExternalBrowser=1" target="_blank">115年度梧棲區中小排、雨水下水道及各級排水路小型工程(開口契約)</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115-010802</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>臺中市梧棲區公所</div>
+                    <div class="detail-item"><strong>預算金額：</strong>1,755,227</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>工程類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/28</div>
+                </div>
+                <div class="project-title">
+                    51. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMxMTU=&openExternalBrowser=1" target="_blank">115年度新竹縣AI智慧園區公共設施巡查代操作維護管理委託專業服務</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>1155210217</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>新竹縣政府</div>
+                    <div class="detail-item"><strong>預算金額：</strong>3,500,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>經公開評選或公開徵求之限制性招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/02</div>
+                </div>
+                <div class="project-title">
+                    52. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMxMTE=&openExternalBrowser=1" target="_blank">115年度鳳林鎮都市計畫雨水下水道清淤工程</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115012001</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>花蓮縣鳳林鎮公所</div>
+                    <div class="detail-item"><strong>預算金額：</strong>1,337,640</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開取得報價單或企劃書</div>
+                    <div class="detail-item"><strong>採購性質：</strong>工程類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/30</div>
+                </div>
+                <div class="project-title">
+                    53. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMxMDU=&openExternalBrowser=1" target="_blank">俞大維先生紀念館文物調查及數位化計畫</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>km11507006</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>內政部國家公園署金門國家公園管理處</div>
+                    <div class="detail-item"><strong>預算金額：</strong>1,300,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開取得報價單或企劃書</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/27</div>
+                </div>
+                <div class="project-title">
+                    54. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMwODA=&openExternalBrowser=1" target="_blank">115-116年台酒生技數位行銷採購案</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115-1024-2-002</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>臺灣菸酒股份有限公司</div>
+                    <div class="detail-item"><strong>預算金額：</strong>5,400,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>經公開評選或公開徵求之限制性招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/11</div>
+                </div>
+                <div class="project-title">
+                    55. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMwNjQ=&openExternalBrowser=1" target="_blank">115-116年度臺東縣海岸線等地區水土保持工程開口契約</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115-116-05-02-03</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>農業部農村發展及水土保持署臺東分署</div>
+                    <div class="detail-item"><strong>預算金額：</strong>27,000,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>工程類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/03</div>
+                </div>
+                <div class="project-title">
+                    56. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMwMjY=&openExternalBrowser=1" target="_blank">115年度配合公共工程開闢、市地重劃、地籍分割測量樁位測設案</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>S115011</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>高雄市政府都市發展局</div>
+                    <div class="detail-item"><strong>預算金額：</strong>3,260,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>經公開評選或公開徵求之限制性招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/05</div>
+                </div>
+                <div class="project-title">
+                    57. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMwMzI=&openExternalBrowser=1" target="_blank">115年大墩國民小學建置創新數位智慧學習校園計畫採購案(B-廁所環境設施改善)</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>ddes1150120</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>臺中市南屯區大墩國民小學</div>
+                    <div class="detail-item"><strong>預算金額：</strong>2,100,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/02</div>
+                </div>
+                <div class="project-title">
+                    58. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzMwMTQ=&openExternalBrowser=1" target="_blank">115年度新竹市地政事務所電子式地籍謄本蓋章機採購案</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>1150122</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>新竹市地政事務所</div>
+                    <div class="detail-item"><strong>預算金額：</strong>225,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開取得報價單或企劃書</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/27</div>
+                </div>
+                <div class="project-title">
+                    59. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzI5NjI=&openExternalBrowser=1" target="_blank">115年度岡山等7區雨水下水道零星修繕及清疏工程</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>C1150108</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>高雄市政府水利局</div>
+                    <div class="detail-item"><strong>預算金額：</strong>7,067,500</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>工程類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/03</div>
+                </div>
+                <div class="project-title">
+                    60. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzI5MDU=&openExternalBrowser=1" target="_blank">原金防部幹訓班暨士校營區營舍整修設計監造暨文化資產相關工作委託技術服務</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>114FD11724757200320</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國防部</div>
+                    <div class="detail-item"><strong>預算金額：</strong>28,787,338</div>
+                    <div class="detail-item"><strong>招標方式：</strong>經公開評選或公開徵求之限制性招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/24</div>
+                </div>
+                <div class="project-title">
+                    61. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzI4NzU=&openExternalBrowser=1" target="_blank">115年度礦業圖資數位影像製作案</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>NW115289102</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>新北市立黃金博物館</div>
+                    <div class="detail-item"><strong>預算金額：</strong>500,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開取得報價單或企劃書</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/29</div>
+                </div>
+                <div class="project-title">
+                    62. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzI4NzE=&openExternalBrowser=1" target="_blank">115年度浚泥海洋棄置區海流監測及許可申請作業採購案</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>K114010337-Y03</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國立高雄科技大學</div>
+                    <div class="detail-item"><strong>預算金額：</strong>2,600,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/02</div>
+                </div>
+                <div class="project-title">
+                    63. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzI4NzA=&openExternalBrowser=1" target="_blank">115年漢中機動派出所地籍測量、圖資繪製、釐正及計算服務採購案</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>WH11501w01</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>臺北市政府警察局萬華分局</div>
+                    <div class="detail-item"><strong>預算金額：</strong>660,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開取得報價單或企劃書</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/28</div>
+                </div>
+                <div class="project-title">
+                    64. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzI2NjE=&openExternalBrowser=1" target="_blank">數位課堂-生生有平板</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>c09080375(更正公告)</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>桃園市蘆竹區海湖國民小學</div>
+                    <div class="detail-item"><strong>預算金額：</strong>793,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開取得報價單或企劃書</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/29</div>
+                </div>
+                <div class="project-title">
+                    65. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzI1NDM=&openExternalBrowser=1" target="_blank">115-116年度動植物檢疫中心開發計畫環境監測技術服務採購案</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>ty115001</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>農業部動植物防疫檢疫署桃園分署</div>
+                    <div class="detail-item"><strong>預算金額：</strong>1,075,200</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/02</div>
+                </div>
+                <div class="project-title">
+                    66. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzIwNTM=&openExternalBrowser=1" target="_blank">數位前瞻應用暨智慧感知AIoT產業技術發展計畫</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>ADI-115111503</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>數位發展部數位產業署</div>
+                    <div class="detail-item"><strong>預算金額：</strong>108,817,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>經公開評選或公開徵求之限制性招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/25</div>
+                </div>
+                <div class="project-title">
+                    67. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzE5MzI=&openExternalBrowser=1" target="_blank">多頻多肢段生物阻抗測量高精準專業型的體組成分析儀1台</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>NT-115002</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國立中興大學</div>
+                    <div class="detail-item"><strong>預算金額：</strong>600,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開取得電子報價單</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/29</div>
+                </div>
+                <div class="project-title">
+                    68. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzE3MjY=&openExternalBrowser=1" target="_blank">115年度監視系統數位化及科技安全網建置委託規劃設計監造技術服務採購案</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115-01-23-02</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>法務部矯正署嘉義監獄</div>
+                    <div class="detail-item"><strong>預算金額：</strong>3,123,040</div>
+                    <div class="detail-item"><strong>招標方式：</strong>經公開評選或公開徵求之限制性招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/02</div>
+                </div>
+                <div class="project-title">
+                    69. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzE2Nzg=&openExternalBrowser=1" target="_blank">115年度歸仁區雨水下水道維護清疏工程(開口契約)</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115006</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>臺南市歸仁區公所</div>
+                    <div class="detail-item"><strong>預算金額：</strong>1,136,731</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開取得報價單或企劃書</div>
+                    <div class="detail-item"><strong>採購性質：</strong>工程類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/28</div>
+                </div>
+                <div class="project-title">
+                    70. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzEyMzA=&openExternalBrowser=1" target="_blank">大南國小--114年度「偏遠地區學校及非山非市學校設施設備計畫-智慧黑板財物採購案」</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115302020006(更正公告)</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>臺東縣政府</div>
+                    <div class="detail-item"><strong>預算金額：</strong>600,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開取得報價單或企劃書</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/27</div>
+                </div>
+                <div class="project-title">
+                    71. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzA2MzI=&openExternalBrowser=1" target="_blank">115年手機鑑識軟體(MagnetGraykey-Essentials)、數位鑑識軟體(MagnetAxiomPremier)及影像處理軟體(MagnetWitness)授權採購案</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115tao-cicpolice001(更正公告)</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>桃園市政府警察局刑事警察大隊</div>
+                    <div class="detail-item"><strong>預算金額：</strong>1,123,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開取得報價單或企劃書</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/02</div>
+                </div>
+                <div class="project-title">
+                    72. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMzAzMDU=&openExternalBrowser=1" target="_blank">地理資訊系統軟體</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>SHOW-RP25024</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>秀傳醫療社團法人秀傳紀念醫院</div>
+                    <div class="detail-item"><strong>預算金額：</strong>3,000,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/29</div>
+                </div>
+                <div class="project-title">
+                    73. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMjk0ODg=&openExternalBrowser=1" target="_blank">馬達智慧節能控制系統一組</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>E2614A010</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>台灣中油股份有限公司</div>
+                    <div class="detail-item"><strong>預算金額：</strong>1,176,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>財物類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/03</div>
+                </div>
+                <div class="project-title">
+                    74. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMjkyMDc=&openExternalBrowser=1" target="_blank">115度大漢溪主河道石門水庫上游擱置物清除(開口合約)</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115C04(更正公告)</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>經濟部水利署北區水資源分署</div>
+                    <div class="detail-item"><strong>預算金額：</strong>4,736,170</div>
+                    <div class="detail-item"><strong>招標方式：</strong>公開招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/02/04</div>
+                </div>
+                <div class="project-title">
+                    75. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMjc3Mjk=&openExternalBrowser=1" target="_blank">115年度桃園市線上繳費連結入口網暨數位繳費服務功能增修暨維護案</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>1141211-9(更正公告)</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>桃園市政府工務局</div>
+                    <div class="detail-item"><strong>預算金額：</strong>3,158,000</div>
+                    <div class="detail-item"><strong>招標方式：</strong>經公開評選或公開徵求之限制性招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/30</div>
+                </div>
+                <div class="project-title">
+                    76. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpam?pk=NzExMjYxNzg=&openExternalBrowser=1" target="_blank">115年度宜蘭縣羅東地政事務所圖解數化地籍圖整合建置及都市計畫地形圖套疊工作委託辦理案</a>
+                </div>
+                <div class="project-details">
+                    <div class="detail-item"><strong>標案案號：</strong>115012701(更正公告)</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>宜蘭縣羅東地政事務所</div>
+                    <div class="detail-item"><strong>預算金額：</strong>1,673,280</div>
+                    <div class="detail-item"><strong>招標方式：</strong>經公開評選或公開徵求之限制性招標</div>
+                    <div class="detail-item"><strong>採購性質：</strong>勞務類</div>
+                    <div class="detail-item"><strong>截止投標：</strong>115/01/29</div>
+                </div>
+            
+
+            <!-- 公開徵求區塊 -->
+            <div class="section-title appeal" id="appeal-section">📋 公開徵求 (58 件)</div>
+            
+                <div class="project-title appeal">
+                    1. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTEyNTg=&openExternalBrowser=1" target="_blank">115年台南處加油站數位監視系統購置（含安裝並連接智能化系統）</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>D50143037</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>台灣中油股份有限公司油品行銷事業部台南營業處</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/21─115/01/27</div>
+                </div>
+                <div class="project-title appeal">
+                    2. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTE2MTQ=&openExternalBrowser=1" target="_blank">115年度大觀發電廠水庫及廠區觀測工作</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>0</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>台灣電力股份有限公司大觀發電廠</div>
+                    <div class="detail-item"><strong>公告次數：</strong>02</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/23─115/01/26</div>
+                </div>
+                <div class="project-title appeal">
+                    3. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTE1MjM=&openExternalBrowser=1" target="_blank">大甲溪發電廠變壓器油中氣體線上型監測器6套含安裝</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>2550302-1</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>台灣電力股份有限公司大甲溪發電廠</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/23─115/02/03</div>
+                </div>
+                <div class="project-title appeal">
+                    4. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTE1OTY=&openExternalBrowser=1" target="_blank">115年度水質自動監測設備維護計畫</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>TYB-115001</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>農業部農田水利署</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/23─115/01/30</div>
+                </div>
+                <div class="project-title appeal">
+                    5. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTE1NTQ=&openExternalBrowser=1" target="_blank">多功能病患監測系統-PROAQT感應器</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>CHYI1154203</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>衛生福利部嘉義醫院</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/23─115/01/28</div>
+                </div>
+                <div class="project-title appeal">
+                    6. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTE1ODE=&openExternalBrowser=1" target="_blank">「桃園供應鏈與物流智慧運籌聯盟推動作業」委託專業服務案</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>1150120-A1</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>桃園市政府經濟發展局</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/23─115/01/29</div>
+                </div>
+                <div class="project-title appeal">
+                    7. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTE2NDM=&openExternalBrowser=1" target="_blank">115年動物用藥資訊管理系統智慧服務建置</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>115004</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>農業部動植物防疫檢疫署</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/23─115/01/27</div>
+                </div>
+                <div class="project-title appeal">
+                    8. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTE2MzU=&openExternalBrowser=1" target="_blank">115年度農田水利作業基金土地清查及占用處理勞務採購案</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>CS1150122001</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>農業部農田水利署</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/23─115/01/29</div>
+                </div>
+                <div class="project-title appeal">
+                    9. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTE1NjE=&openExternalBrowser=1" target="_blank">115-117年全臺藍碳生態系調查更新及納入國家溫室氣體清冊（LULUCF－濕地類別）技術支援計畫</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>115-C-45</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>海洋委員會海洋保育署</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/23─115/02/02</div>
+                </div>
+                <div class="project-title appeal">
+                    10. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTE2Mjg=&openExternalBrowser=1" target="_blank">麻醉資訊系統租賃案</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>NC15088P</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國防部軍醫局</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/23─115/02/02</div>
+                </div>
+                <div class="project-title appeal">
+                    11. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTEzNDk=&openExternalBrowser=1" target="_blank">黑潮洋流能測試海域水文觀測</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>NAMR115059</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國家海洋研究院</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/22─115/01/26</div>
+                </div>
+                <div class="project-title appeal">
+                    12. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTExOTg=&openExternalBrowser=1" target="_blank">澎湖縣政府消防局公開徵求廠商提供水庫消防車及小型消防車規格、報價及型錄等相關資料</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>115-A01</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>澎湖縣政府消防局</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/22─115/01/29</div>
+                </div>
+                <div class="project-title appeal">
+                    13. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTE0OTc=&openExternalBrowser=1" target="_blank">115年度勞工作業環境監測乙案</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>JK15</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國防部軍備局生產製造中心</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/22─115/01/26</div>
+                </div>
+                <div class="project-title appeal">
+                    14. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTE0NTg=&openExternalBrowser=1" target="_blank">營區污水下水道維護</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>EK15008P</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國防部空軍司令部</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/22─115/01/30</div>
+                </div>
+                <div class="project-title appeal">
+                    15. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTEzMjM=&openExternalBrowser=1" target="_blank">床邊照護系統暨數位床頭卡維護案53組</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>HJ15476P</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國防醫學大學</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/22─115/01/29</div>
+                </div>
+                <div class="project-title appeal">
+                    16. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTEzODY=&openExternalBrowser=1" target="_blank">專業多媒體數位內容創作套裝軟體授權(一年期)等九項</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>PA15303P</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國防部海軍司令部</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/22─115/02/05</div>
+                </div>
+                <div class="project-title appeal">
+                    17. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTE0MjM=&openExternalBrowser=1" target="_blank">二號機循環海水系統設備維修工作</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>TPC-350-1150121-01</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>台灣電力股份有限公司第一核能發電廠</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/22─115/02/04</div>
+                </div>
+                <div class="project-title appeal">
+                    18. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwODkwMDc=&openExternalBrowser=1" target="_blank">海象波流觀測系統採購案</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>PU16015</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國防部海軍司令部</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/02─115/01/30</div>
+                </div>
+                <div class="project-title appeal">
+                    19. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwODkwMTI=&openExternalBrowser=1" target="_blank">海域水文測量系統採購案</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>PU16014</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國防部海軍司令部</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/02─115/01/30</div>
+                </div>
+                <div class="project-title appeal">
+                    20. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTEyMjk=&openExternalBrowser=1" target="_blank">115年度火災調查平板電腦採購案</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>FI1150120-3</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>花蓮縣消防局</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/21─115/01/30</div>
+                </div>
+                <div class="project-title appeal">
+                    21. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTEyMzk=&openExternalBrowser=1" target="_blank">智慧彈性製造系統1式採購案</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>115C016</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>勞動部勞動力發展署中彰投分署</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/21─115/01/23</div>
+                </div>
+                <div class="project-title appeal">
+                    22. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTExNTI=&openExternalBrowser=1" target="_blank">數位床頭卡採購案800台</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>HJ15475P</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國防醫學大學</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/21─115/01/28</div>
+                </div>
+                <div class="project-title appeal">
+                    23. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTEyNTI=&openExternalBrowser=1" target="_blank">核一、二、三廠廠房沉陷測量（115~119年）計畫</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>0271509001</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>台灣電力股份有限公司</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/21─115/01/30</div>
+                </div>
+                <div class="project-title appeal">
+                    24. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTExNjM=&openExternalBrowser=1" target="_blank">數位迷彩飛行服等3項</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>GF15040P</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國防部陸軍司令部</div>
+                    <div class="detail-item"><strong>公告次數：</strong>02</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/21─115/01/30</div>
+                </div>
+                <div class="project-title appeal">
+                    25. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTEyMTA=&openExternalBrowser=1" target="_blank">115年度火災調查用無人機採購案（非大陸廠牌）</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>FI1150120-1</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>花蓮縣消防局</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/21─115/01/30</div>
+                </div>
+                <div class="project-title appeal">
+                    26. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTA5Mjk=&openExternalBrowser=1" target="_blank">數位相機及鏡頭設備採購</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>C15A00352</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>臺北大眾捷運股份有限公司</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/16─115/01/26</div>
+                </div>
+                <div class="project-title appeal">
+                    27. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTEyNzE=&openExternalBrowser=1" target="_blank">綜發四期-115年智慧教育中心教學場域暨設備修繕及採購案</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>ED1501A1</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>花蓮縣政府</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/20─115/01/30</div>
+                </div>
+                <div class="project-title appeal">
+                    28. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTEyMTE=&openExternalBrowser=1" target="_blank">115年度火災調查專業攝影器材採購案</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>FI1150120-2</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>花蓮縣消防局</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/20─115/01/30</div>
+                </div>
+                <div class="project-title appeal">
+                    29. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTA3MDU=&openExternalBrowser=1" target="_blank">115年輸送機清潔器更換及軸承監測維護與雜項設備檢修工作</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>C20260114</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>台灣電力股份有限公司台中發電廠</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/20─115/01/26</div>
+                </div>
+                <div class="project-title appeal">
+                    30. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTExMDM=&openExternalBrowser=1" target="_blank">航空燃油熱氧化穩定性測試儀</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>I71153006</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>台灣中油股份有限公司煉製事業部桃園煉油廠</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/20─115/01/26</div>
+                </div>
+                <div class="project-title appeal">
+                    31. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTExNDk=&openExternalBrowser=1" target="_blank">115年度烏山頭水庫風景區八田與一形象公仔宣導品採購案</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>CN115J003</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>農業部農田水利署</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/20─115/02/02</div>
+                </div>
+                <div class="project-title appeal">
+                    32. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTEwODg=&openExternalBrowser=1" target="_blank">3D列印機及耗材</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>1150112-1</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國家原子能科技研究院</div>
+                    <div class="detail-item"><strong>公告次數：</strong>02</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/20─115/01/26</div>
+                </div>
+                <div class="project-title appeal">
+                    33. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTEwNTk=&openExternalBrowser=1" target="_blank">115年度作業環境監測及危害性化學品評估工作</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>2026011901</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>台灣電力股份有限公司林口發電廠</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/20─115/01/27</div>
+                </div>
+                <div class="project-title appeal">
+                    34. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwODk5NTM=&openExternalBrowser=1" target="_blank">115年數位課程研習平臺擴充更新暨維運服務案</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>1150119-ME</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國立臺北教育大學</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/19─115/01/28</div>
+                </div>
+                <div class="project-title appeal">
+                    35. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTA2Mzc=&openExternalBrowser=1" target="_blank">115-116年度墾丁國家公園海洋污染緊急應變勞務委託案</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>439-115-0-173</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>內政部國家公園署墾丁國家公園管理處</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/19─115/01/26</div>
+                </div>
+                <div class="project-title appeal">
+                    36. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTA4NjQ=&openExternalBrowser=1" target="_blank">115年臺中港鄰近海域地形測量</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>NAMR115051</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國家海洋研究院</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/19─115/01/29</div>
+                </div>
+                <div class="project-title appeal">
+                    37. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTA4ODQ=&openExternalBrowser=1" target="_blank">花蓮地區臺灣黑熊野放後監測追蹤計畫(開口契約)</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>115nc001</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>農業部林業及自然保育署花蓮分署</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/19─115/01/23</div>
+                </div>
+                <div class="project-title appeal">
+                    38. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTA5MjQ=&openExternalBrowser=1" target="_blank">115年度自辦職業訓練職類產業調查</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>115Y147</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>勞動部勞動力發展署桃竹苗分署</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/16─115/01/23</div>
+                </div>
+                <div class="project-title appeal">
+                    39. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTA4NzI=&openExternalBrowser=1" target="_blank">訓練用航空器等3項公開徵求規格及報價</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>PC15009P</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國防部海軍司令部</div>
+                    <div class="detail-item"><strong>公告次數：</strong>02</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/16─115/01/23</div>
+                </div>
+                <div class="project-title appeal">
+                    40. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTA3NjI=&openExternalBrowser=1" target="_blank">「台糖公司智慧養豬技術開發與示範場域建置（一）智慧母豬分娩警示系統」</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>11530</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>台灣糖業股份有限公司研究所</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/16─115/01/26</div>
+                </div>
+                <div class="project-title appeal">
+                    41. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTA3NjE=&openExternalBrowser=1" target="_blank">採購智慧型身體組成分析儀(立架型)1台</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>B100095928</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>台灣電力股份有限公司電力修護處</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/16─115/01/26</div>
+                </div>
+                <div class="project-title appeal">
+                    42. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTAyNzA=&openExternalBrowser=1" target="_blank">智慧算力共用平臺建置委外服務案</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>11500001</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>財政部財政資訊中心</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/15─115/03/02</div>
+                </div>
+                <div class="project-title appeal">
+                    43. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTA1ODE=&openExternalBrowser=1" target="_blank">數位迷彩野戰衣等5項</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>GF15030L</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國防部陸軍司令部</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/15─115/02/13</div>
+                </div>
+                <div class="project-title appeal">
+                    44. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTA2MjY=&openExternalBrowser=1" target="_blank">60吋棧橋海水管金屬伸縮接頭一批(含安裝、測試)</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>L4015J001</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>台灣中油股份有限公司天然氣事業部觀塘液化天然氣廠</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/15─115/01/30</div>
+                </div>
+                <div class="project-title appeal">
+                    45. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTA2NTg=&openExternalBrowser=1" target="_blank">115-116年智慧學習創新場域委外營運案</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>11512016</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>行政院人事行政總處公務人力發展學院</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/15─115/01/23</div>
+                </div>
+                <div class="project-title appeal">
+                    46. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwOTA2MzQ=&openExternalBrowser=1" target="_blank">115-117年海洋保育審議業務支援整合計畫</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>115-P-25</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>海洋委員會海洋保育署</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/15─115/01/26</div>
+                </div>
+                <div class="project-title appeal">
+                    47. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwODk3NTA=&openExternalBrowser=1" target="_blank">大六機火焰探測器採購</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>20260108</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>台灣電力股份有限公司大林發電廠</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/08─115/01/23</div>
+                </div>
+                <div class="project-title appeal">
+                    48. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwODk2NDY=&openExternalBrowser=1" target="_blank">αβ空氣輻射監測器</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>1150106001</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國家原子能科技研究院</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/07─115/01/30</div>
+                </div>
+                <div class="project-title appeal">
+                    49. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwODkwMDA=&openExternalBrowser=1" target="_blank">地面與高空氣象自動觀測系統採購案</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>PU16012</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國防部海軍司令部</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/02─115/01/30</div>
+                </div>
+                <div class="project-title appeal">
+                    50. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwODkyOTI=&openExternalBrowser=1" target="_blank">數位式比重測定儀維修案</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>115010100001</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國防部空軍司令部</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>115/01/02─115/06/30</div>
+                </div>
+                <div class="project-title appeal">
+                    51. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwODg2MDk=&openExternalBrowser=1" target="_blank">宏南宿舍區建築現況調查及結構支撐補強圖說技術服務案</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>MEAXXXX</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>台灣中油股份有限公司煉製事業部</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>114/12/24─115/03/31</div>
+                </div>
+                <div class="project-title appeal">
+                    52. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwODgzOTI=&openExternalBrowser=1" target="_blank">區域輻射監測器及空浮監測器連線系統</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>115xxx</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國家原子能科技研究院</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>114/12/22─115/01/30</div>
+                </div>
+                <div class="project-title appeal">
+                    53. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwODYyNDY=&openExternalBrowser=1" target="_blank">115年監錄系統影像智慧分析平臺底層硬體及作業系統建置案</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>115C-007p</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>高雄市政府警察局</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>114/11/27─115/03/02</div>
+                </div>
+                <div class="project-title appeal">
+                    54. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwODQ1ODA=&openExternalBrowser=1" target="_blank">單球徑磨損測量量規維修案</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>11411090003</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國防部空軍司令部</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>114/11/10─115/06/30</div>
+                </div>
+                <div class="project-title appeal">
+                    55. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwODQzMTI=&openExternalBrowser=1" target="_blank">116年王田供油中心貯存系統監測申報及調查預防工作</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>DDK1441004</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>台灣中油股份有限公司油品行銷事業部台中營業處</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>114/11/07─115/01/30</div>
+                </div>
+                <div class="project-title appeal">
+                    56. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwNzcxODY=&openExternalBrowser=1" target="_blank">臺北郵件處理中心國際航空郵件科郵件處理承攬勞務採購案</a><span class="revoked-badge">⚠️ 公告已撤銷</span>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>E114-313</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>中華郵政股份有限公司臺北郵件處理中心</div>
+                    <div class="detail-item"><strong>公告次數：</strong>02</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>114/09/01─115/09/10</div>
+                </div>
+                <div class="project-title appeal">
+                    57. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwNzg2NTI=&openExternalBrowser=1" target="_blank">海水染色劑採購</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>1140911</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>國防部空軍司令部</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>114/09/12─115/03/12</div>
+                </div>
+                <div class="project-title appeal">
+                    58. <a href="https://web.pcc.gov.tw/prkms/urlSelector/common/tpAppeal?pk=NzAwNzYzMzU=&openExternalBrowser=1" target="_blank">115年度德基水庫漂流木打撈及保護帶維護勞務性工作</a>
+                </div>
+                <div class="project-details appeal">
+                    <div class="detail-item"><strong>標案案號：</strong>115-01</div>
+                    <div class="detail-item"><strong>機關名稱：</strong>台灣電力股份有限公司大甲溪發電廠</div>
+                    <div class="detail-item"><strong>公告次數：</strong>01</div>
+                    <div class="detail-item"><strong>徵求日期：</strong>114/08/21─115/09/11</div>
+                </div>
+            
+
+            <div class="keywords-section">
+                <h4>🔍 標案名稱篩選關鍵字(Google 表單提供)</h4>
+                <blockquote>
+                    3D, GIS, LIDAR, 測量, 測繪, 地形, 地籍, 斷面, 套繪, 樁位, 正射, 門牌, 勘測, 探測, 淤積, 淤泥, 水深, 水準, 公共設施管線, 地理資訊, 空間資訊, 資訊系統, 都市計畫, 都市發展, 航測, 航拍, 航照, 航空, 空載, 重力, 三維, 文化資產, 數位, 智慧, 建築線, 調查, 觀測, 監測, 港灣, 水庫, 水下, 海岸, 海域, 海水, 海洋, 光達, 農田, 坵塊圖資料庫, 地理圖資
+                </blockquote>
+            </div>
+        </div>
+    </div>
+
+    <!-- 回到頂部按鈕 -->
+    <a href="#top" class="back-to-top" id="backToTop">
+        ⬆️ 回到頂部
+    </a>
+
+    <script>// 平滑滾動到指定區塊
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+
+        // 回到頂部按鈕顯示/隱藏控制
+        window.addEventListener('scroll', function() {
+            const backToTop = document.getElementById('backToTop');
+            if (window.pageYOffset > 300) {
+                backToTop.classList.add('show');
+            } else {
+                backToTop.classList.remove('show');
+            }
+        });
+
+        // 平滑滾動回到頂部
+        document.getElementById('backToTop').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });</script>
+</body>
+</html>
